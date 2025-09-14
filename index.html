@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABDUL ALIM A - Portfolio</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            overflow-x: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #60a5fa, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientShift {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(30deg); }
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(96, 165, 250, 0.2);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: gradientBg 3s ease infinite;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(96, 165, 250, 0.4);
+        }
+
+        @keyframes gradientBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(17, 24, 39, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-card {
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            background: rgba(31, 41, 55, 0.8);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .project-card {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(96, 165, 250, 0.2);
+        }
+
+        .contact-form {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-input {
+            background: rgba(55, 65, 81, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.8);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+        }
+
+        .mobile-menu.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+            .mobile-nav-btn {
+                display: block;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .desktop-nav {
+                display: flex;
+            }
+            .mobile-nav-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function Portfolio() {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [activeSection, setActiveSection] = useState('home');
+
+            useEffect(() => {
+                // Intersection Observer for animations
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('visible');
+                                setActiveSection(entry.target.id);
+                            }
+                        });
+                    },
+                    { threshold: 0.1 }
+                );
+
+                document.querySelectorAll('.fade-in').forEach((el) => {
+                    observer.observe(el);
+                });
+
+                return () => observer.disconnect();
+            }, []);
+
+            const scrollTo = (id) => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                setIsMenuOpen(false);
+            };
+
+            const projects = [
+                {
+                    title: "Mortgage Repayment Calculator",
+                    description: "A frontend mortgage repayment calculator built with Html, Css, JavaScript. Features include loan amount input, interest rate selection, and repayment term configuration.",
+                    tech: ["Html", "Css", "JavaScript", "Bootstrap"],
+                    image: "images/mortgage.png",
+                    github: "https://github.com/Abdulalim26/mortgage-repayment-calculator.git",
+                    live: "https://abdulalim26.github.io/mortgage-repayment-calculator/"
+                },
+                {
+                    title: "Social Link Profile",
+                    description: "A sleek social link profile page that aggregates all your social media links in one place. Built with React and styled-components for a modern look.",
+                    tech: ["Html", "CSS", "Bootstrap"],
+                    image: "images/social link.png",
+                    github: "https://github.com/Abdulalim26/social-link.git",
+                    live: "https://abdulalim26.github.io/social-link/"
+                },
+                {
+                    title: "Weather Forecasting Dashboard",
+                    description: "A responsive dashboard displaying weather analytics with interactive Forecasts, and location-based services.",
+                    tech: ["react.js", "javascript", "html","css", "Bootstrap"],
+                    image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=400&h=250&fit=crop",
+                    github: "https://github.com/Abdulalim26/weather-widget-app-main-project-.git",
+                    live: "https://abdulalim26.github.io/weather-widget-app-main-project-/"
+                }
+            ];
+
+            const skills = [
+                { name: "Frontend Developer", items: ["React", "Html", "JavaScript","Bootstrap", "CSS3"], icon: "💻" },
+                { name: "UX/UI Designer", items: ["Figma", "Adobe XD", "UI/UX", "Responsive Design"], icon: "🎨" }
+            ];
+
+            return (
+                <div>
+                    {/* Navigation */}
+                    <nav className="navbar fixed top-0 w-full z-50">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="flex justify-between items-center h-16">
+                                <div className="text-2xl font-bold gradient-text">
+                                    Portfolio
+                                </div>
+                                
+                                {/* Desktop Menu */}
+                                <div className="desktop-nav space-x-8">
+                                    {['home', 'about', 'skills', 'projects', 'contact'].map((item) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => scrollTo(item)}
+                                            className={`capitalize transition-colors hover:text-blue-400 ${
+                                                activeSection === item ? 'text-blue-400' : 'text-gray-300'
+                                            }`}
+                                        >
+                                            {item}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Mobile Menu Button */}
+                                <button
+                                    className="mobile-nav-btn text-white"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                >
+                                    {isMenuOpen ? '✕' : '☰'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Mobile Menu */}
+                        <div className={`mobile-menu ${isMenuOpen ? 'show' : ''}`}>
+                            {['home', 'about', 'skills', 'projects', 'contact'].map((item) => (
+                                <button
+                                    key={item}
+                                    onClick={() => scrollTo(item)}
+                                    className="block w-full text-left px-3 py-2 capitalize hover:text-blue-400 transition-colors"
+                                >
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section id="home" className="min-h-screen flex items-center justify-center px-4 pt-16">
+                        <div className="text-center fade-in">
+                            <div className="mb-8">
+                                <div className="w-40 h-40 mx-auto mb-6 rounded-full" 
+                                     style={{background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', padding: '4px'}}>
+                                    <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center">
+                                        <span className="text-4xl font-bold">AA</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-bold mb-6 gradient-text">
+                                ABDUL ALIM A
+                            </h1>
+                            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                                Frontend Developer & UI/UX Designer
+                            </p>
+                            <p className="text-lg text-gray-400 mb-8 max-w-3xl mx-auto">
+                                I create beautiful, functional, and user-centered digital experiences that solve real-world problems
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <button
+                                    onClick={() => scrollTo('projects')}
+                                    className="btn-primary"
+                                >
+                                    View My Work
+                                </button>
+                                <button
+                                    onClick={() => scrollTo('contact')}
+                                    style={{
+                                        border: '2px solid #3b82f6',
+                                        background: 'transparent',
+                                        color: 'white',
+                                        padding: '10px 24px',
+                                        borderRadius: '9999px',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.background = '#3b82f6';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.background = 'transparent';
+                                    }}
+                                >
+                                    Get In Touch
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* About Section */}
+                    <section id="about" className="py-20 px-4">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="fade-in">
+                                <h2 className="text-4xl font-bold text-center mb-16 gradient-text">
+                                    About Me
+                                </h2>
+                                <div className="grid md:grid-cols-2 gap-12 items-center">
+                                    <div>
+                                       <div className="w-80 h-80 mx-auto rounded-2xl overflow-hidden"
+                                          style={{background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2))'}}>
+                                            <img 
+                                                   src="images/profile.jpg" 
+                                                   alt="Abdul Alim A" 
+                                                   className="w-full h-full object-cover"
+                                                                                          />
+                                          </div>
+
+                                    </div>
+                                    <div className="space-y-6">
+                                        <p className="text-lg text-gray-300">
+                                            Hi! I'm Abdul Alim A, a passionate frontend developer creating digital solutions that make a difference. I love turning complex problems into simple, beautiful, and intuitive designs.
+                                        </p>
+                                        <p className="text-lg text-gray-300">
+                                        Motivated Frontend Developer Fresher with a foundation in modern web technologies, including HTML5, CSS3, JavaScript, and React.js. Quick learner with a keen interest in UI/UX principles and best coding practices. Looking to start a career in a collaborative environment where I can enhance my skills, contribute to impactful projects, and grow as a professional developer.
+                                        </p>
+                                        <div className="flex flex-wrap gap-4 mt-8">
+                                            <span className="bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm">Fresher</span>
+                                            <span className="bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full text-sm">20+ Mini Projects</span>
+                                            <span className="bg-pink-500/20 text-pink-300 px-4 py-2 rounded-full text-sm">Always Learning</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Skills Section */}
+                    <section id="skills" className="py-20 px-4" style={{background: 'rgba(31, 41, 55, 0.3)'}}>
+                        <div className="max-w-6xl mx-auto">
+                            <div className="fade-in">
+                                <h2 className="text-4xl font-bold text-center mb-16 gradient-text">
+                                    Skills & Expertise
+                                </h2>
+                                <center>
+                                <div className="grid md:grid-cols-2 gap-8 justify-center">
+                                    {skills.map((skill, index) => (
+                                        <div
+                                            key={skill.name}
+                                            className="skill-card p-8 rounded-2xl text-center"
+                                            style={{ animationDelay: `${index * 0.1}s` }}
+                                        >
+                                            <div className="text-4xl mb-6">
+                                                {skill.icon}
+                                            </div>
+                                            <h3 className="text-xl font-semibold mb-4">{skill.name}</h3>
+                                            <div className="flex flex-wrap gap-2 justify-center">
+                                                {skill.items.map((item) => (
+                                                    <span
+                                                        key={item}
+                                                        className="bg-gray-700/50 text-gray-300 px-3 py-1 rounded-full text-sm"
+                                                    >
+                                                        {item}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                </center>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Projects Section */}
+                    <section id="projects" className="py-20 px-4">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="fade-in">
+                                <h2 className="text-4xl font-bold text-center mb-16 gradient-text">
+                                    Featured Projects
+                                </h2>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {projects.map((project, index) => (
+                                        <div
+                                            key={project.title}
+                                            className="project-card rounded-2xl"
+                                            style={{ animationDelay: `${index * 0.1}s` }}
+                                        >
+                                            <div className="relative overflow-hidden">
+                                                <img
+                                                    src={project.image}
+                                                    alt={project.title}
+                                                    className="w-full h-48 object-cover transition-transform duration-500 hover:scale-110"
+                                                />
+                                            </div>
+                                            <div className="p-6">
+                                                <h3 className="text-xl font-semibold mb-3">{project.title}</h3>
+                                                <p className="text-gray-400 mb-4 text-sm">{project.description}</p>
+                                                <div className="flex flex-wrap gap-2 mb-4">
+                                                    {project.tech.map((tech) => (
+                                                        <span
+                                                            key={tech}
+                                                            className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs"
+                                                        >
+                                                            {tech}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <a
+                                                        href={project.github}
+                                                        className="text-gray-400 hover:text-white transition-colors text-sm"
+                                                    >
+                                                        📁 Code
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Contact Section */}
+                    <section id="contact" className="py-20 px-4" style={{background: 'rgba(31, 41, 55, 0.3)'}}>
+                        <div className="max-w-4xl mx-auto">
+                            <div className="fade-in">
+                                <h2 className="text-4xl font-bold text-center mb-16 gradient-text">
+                                    Get In Touch
+                                </h2>
+                                <div className="text-center mb-12">
+                                    <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+                                        I'm always interested in new opportunities and collaborations. Let's create something amazing together!
+                                    </p>
+                                    <div className="flex justify-center gap-6">
+                                        <a
+                                            href="mailto:romanalim26@gmail.com"
+                                            className="bg-gray-800/80 p-4 rounded-full hover:bg-blue-600 transition-colors"
+                                        >
+                                            📧Email
+                                        </a>
+                                        <a
+                                            href="https://github.com/Abdulalim26"
+                                            className="bg-gray-800/80 p-4 rounded-full hover:bg-blue-600 transition-colors"
+                                        >
+                                            🐙Github
+                                        </a>
+                                        <a
+                                            href="https://linkedin.com/in/abdul-alim-210474315/"
+                                             target="_blank" rel="noopener noreferrer"
+                                            className="bg-gray-800/80 p-4 rounded-full hover:bg-blue-600 transition-colors"
+                                        >
+                                            💼LinkedIn
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="contact-form rounded-2xl p-8">
+                                    <div className="space-y-6">
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">Name</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-input"
+                                                    placeholder="Your name"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">Email</label>
+                                                <input
+                                                    type="email"
+                                                    className="form-input"
+                                                    placeholder="your.email@example.com"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Subject</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                placeholder="Project inquiry"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Message</label>
+                                            <textarea
+                                                rows="5"
+                                                className="form-input"
+                                                placeholder="Tell me about your project..."
+                                                style={{resize: 'none'}}
+                                            ></textarea>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn-primary w-full"
+                                            onClick={() => alert('Thank you for your message! I\'ll get back to you soon.')}
+                                        >
+                                            Send Message
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="py-8 px-4" style={{borderTop: '1px solid rgba(255, 255, 255, 0.1)'}}>
+                        <div className="max-w-6xl mx-auto text-center text-gray-400">
+                            <p>&copy; 2025 Abdul Alim A. Built with HTML5, CSS3, JavaScript & React.</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<Portfolio />, document.getElementById('root'));
+    </script>
+</body>
+</html>
